@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blockcraft-ursina"
+version = "0.1.0"
+description = "A very simple Minecraft-like game built with Ursina, organized with a layered architecture."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Your Name" }
+]
+dependencies = [
+  "ursina>=5,<6"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "black>=24,<25"
+]
+
+[project.scripts]
+blockcraft = "blockcraft.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["blockcraft*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312", "py313"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-q"
+testpaths = [
+  "tests"
+]
+
+[tool.uv]
+dev-dependencies = [
+  "pytest>=8,<9",
+  "black>=24,<25"
+]
