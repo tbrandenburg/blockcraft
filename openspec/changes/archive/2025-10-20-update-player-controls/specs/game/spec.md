@@ -1,8 +1,4 @@
-# game Specification
-
-## Purpose
-TBD - created by archiving change add-ursina-blockcraft. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
 ### Requirement: Basic Player Movement
 The system SHALL allow the player to move on the XZ plane using WASD input while the camera orientation controls which direction is forward.
 
@@ -28,22 +24,3 @@ The system SHALL allow the player to adjust the camera orientation using mouse m
 #### Scenario: Vertical mouse movement
 - **WHEN** the player moves the mouse up or down
 - **THEN** the camera pitch tilts up or down within reasonable limits
-
-### Requirement: Block Interaction
-The system SHALL support adding or removing a block at the player's ground position.
-
-#### Scenario: Add block
-- **WHEN** right mouse button is pressed
-- **THEN** a block of the selected type is placed at the player's ground position
-
-#### Scenario: Remove block
-- **WHEN** left mouse button is pressed
-- **THEN** the block at the player's ground position is removed if it exists
-
-### Requirement: UV Run Command Launches Game
-The system SHALL expose a `uv run blockcraft` command that launches the Blockcraft game entry point.
-
-#### Scenario: Launch game from command
-- **WHEN** a player runs `uv run blockcraft`
-- **THEN** the Blockcraft game window opens and the game loop starts
-

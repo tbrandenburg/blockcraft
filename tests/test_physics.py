@@ -1,10 +1,17 @@
 from blockcraft.physics.simple_physics import SimplePhysics
 
 
-def test_apply_gravity_keeps_above_ground():
+def test_apply_gravity_simulates_fall_and_ground_snap():
     physics = SimplePhysics()
-    # Player below ground snaps up to ground level
-    assert physics.apply_gravity(y=-5.0, ground_y=0.0) == 0.0
+    _, y, _, velocity = physics.apply_gravity(
+        position=(0.0, 5.0, 0.0), velocity=0.0, ground_y=0.0, dt=0.1
+    )
 
-    # Player above ground stays as is (no extra falling in this simple model)
-    assert physics.apply_gravity(y=3.0, ground_y=0.0) == 3.0
+    assert y < 5.0
+    assert velocity < 0.0
+
+    _, ground_y_result, _, velocity = physics.apply_gravity(
+        position=(0.0, -1.0, 0.0), velocity=-2.0, ground_y=0.0, dt=0.1
+    )
+    assert ground_y_result == 0.0
+    assert velocity == 0.0

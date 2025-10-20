@@ -1,8 +1,4 @@
-# ui Specification
-
-## Purpose
-TBD - created by archiving change add-ursina-blockcraft. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
 ### Requirement: Ursina App and Rendering
 The system SHALL start an Ursina application that displays world blocks and updates them as the world changes while capturing keyboard and mouse input.
 
@@ -20,4 +16,3 @@ The system SHALL capture keyboard states and mouse deltas each frame and pass th
 #### Scenario: Per-frame input capture
 - **WHEN** the update loop runs
 - **THEN** keyboard WASD states and mouse delta values are forwarded to the game manager and camera controller
-

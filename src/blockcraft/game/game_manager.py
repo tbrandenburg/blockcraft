@@ -7,7 +7,7 @@ functions short and names descriptive so the code is easy to learn.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from math import cos, sin, radians
 
 from blockcraft.world.world import World
 from blockcraft.world.blocks import BlockType
@@ -25,9 +25,12 @@ class InputState:
     back: bool = False
     left: bool = False
     right: bool = False
+    mouse_dx: float = 0.0
+    mouse_dy: float = 0.0
     add_block: bool = False
     remove_block: bool = False
     dt: float = 0.0
+
 
 class Player:
     """Very simple player state.
@@ -40,6 +43,10 @@ class Player:
         self.y = 5.0
         self.z = 0.0
         self.speed = 10.0
+        self.pitch = 20.0
+        self.yaw = 0.0
+        self.gravity = True
+        self.vertical_velocity = 0.0
         self.selected_block: BlockType = BlockType.GRASS
 
     def position_tuple(self) -> tuple[float, float, float]:
@@ -68,21 +75,9 @@ class GameManager:
         We keep controls simple: WASD to move on the ground plane.
         """
 
-        move_amount = self.player.speed * input_state.dt
-
-        if input_state.forward:  # forward (decrease z)
-            self.player.z -= move_amount
-        if input_state.back:  # backward (increase z)
-            self.player.z += move_amount
-        if input_state.left:  # left (decrease x)
-            self.player.x -= move_amount
-        if input_state.right:  # right (increase x)
-            self.player.x += move_amount
-
-        # Apply basic gravity so the player stays on ground.
-        self.player.y = self.physics.apply_gravity(
-            y=self.player.y, ground_y=self.world.ground_level()
-        )
+        self._apply_camera_look(input_state)
+        self._apply_movement(input_state)
+        self._apply_gravity(input_state.dt)
 
         # Block interactions: left click removes, right click adds.
         if input_state.remove_block:
@@ -91,3 +86,55 @@ class GameManager:
             self.world.add_block_at_player(
                 self.player.position_tuple(), self.player.selected_block
             )
+
+    def _apply_camera_look(self, input_state: InputState) -> None:
+        sensitivity = 60.0
+        self.player.yaw += input_state.mouse_dx * sensitivity * input_state.dt
+        self.player.pitch -= input_state.mouse_dy * sensitivity * input_state.dt
+        self.player.pitch = max(-80.0, min(80.0, self.player.pitch))
+
+    def _apply_movement(self, input_state: InputState) -> None:
+        move_speed = self.player.speed
+        move_amount = move_speed * input_state.dt
+
+        yaw_rad = radians(self.player.yaw)
+        forward_vec = (sin(yaw_rad), -cos(yaw_rad))
+        right_vec = (forward_vec[1], -forward_vec[0])
+
+        move_x = 0.0
+        move_z = 0.0
+
+        if input_state.forward:
+            move_x += forward_vec[0]
+            move_z += forward_vec[1]
+        if input_state.back:
+            move_x -= forward_vec[0]
+            move_z -= forward_vec[1]
+        if input_state.right:
+            move_x += right_vec[0]
+            move_z += right_vec[1]
+        if input_state.left:
+            move_x -= right_vec[0]
+            move_z -= right_vec[1]
+
+        length_sq = move_x * move_x + move_z * move_z
+        if length_sq > 0:
+            length = length_sq ** 0.5
+            move_x = (move_x / length) * move_amount
+            move_z = (move_z / length) * move_amount
+
+            self.player.x += move_x
+            self.player.z += move_z
+
+    def _apply_gravity(self, dt: float) -> None:
+        if not self.player.gravity:
+            return
+
+        self.player.x, self.player.y, self.player.z, self.player.vertical_velocity = (
+            self.physics.apply_gravity(
+                position=(self.player.x, self.player.y, self.player.z),
+                velocity=self.player.vertical_velocity,
+                ground_y=self.world.ground_level(),
+                dt=dt,
+            )
+        )

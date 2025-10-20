@@ -10,17 +10,29 @@ from __future__ import annotations
 class SimplePhysics:
     """Very small physics helper class."""
 
-    def __init__(self, gravity: float = 9.8) -> None:
-        # Gravity value is not deeply used; we keep behavior simple.
+    def __init__(self, gravity: float = 25.0, damping: float = 0.85) -> None:
         self.gravity = gravity
+        self.damping = damping
 
-    def apply_gravity(self, y: float, ground_y: float) -> float:
-        """Return a y value that does not go below the ground.
+    def apply_gravity(
+        self,
+        position: tuple[float, float, float],
+        velocity: float,
+        ground_y: float,
+        dt: float = 1 / 60.0,
+    ) -> tuple[float, float, float, float]:
+        x, y, z = position
 
-        For now, if the player is above ground, we snap to ground.
-        This keeps movement simple for beginners.
-        """
+        velocity -= self.gravity * dt
+        y += velocity * dt
 
         if y < ground_y:
-            return ground_y
-        return y
+            y = ground_y
+            velocity = 0.0
+        else:
+            velocity *= self.damping
+
+        if abs(velocity) < 0.01 and y <= ground_y:
+            velocity = 0.0
+
+        return (x, y, z, velocity)

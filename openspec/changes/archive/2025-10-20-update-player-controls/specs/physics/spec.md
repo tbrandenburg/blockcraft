@@ -1,8 +1,4 @@
-# physics Specification
-
-## Purpose
-TBD - created by archiving change add-ursina-blockcraft. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
 ### Requirement: Ground Snapping
 The system MUST prevent the player from being below the ground level while allowing gravity to pull the player toward the ground.
 
@@ -13,4 +9,3 @@ The system MUST prevent the player from being below the ground level while allow
 #### Scenario: Above ground
 - **WHEN** the player's y is above the ground level
 - **THEN** gravity reduces vertical velocity until the player lands on the ground
-
